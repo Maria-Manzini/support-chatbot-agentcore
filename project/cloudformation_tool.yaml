@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Bug report Lambda tool + DynamoDB table for the AgentCore support chatbot
+
+Resources:
+  BugReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: bug-report-tool-stack-bug-reports
+      AttributeDefinitions:
+        - AttributeName: ticketId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ticketId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  BugReportLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBWriteAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                Resource: !GetAtt BugReportsTable.Arn
+
+  CreateBugReportFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: create-bug-report
+      Runtime: python3.12
+      Handler: create_bug_report.lambda_handler
+      Role: !GetAtt BugReportLambdaRole.Arn
+      Timeout: 10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref BugReportsTable
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              return {"messageVersion": "1.0", "response": {}}
+
+  CreateBugReportPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CreateBugReportFunction
+      Principal: bedrock.amazonaws.com
+
+Outputs:
+  BugReportFunctionArn:
+    Value: !GetAtt CreateBugReportFunction.Arn
+  BugReportsTableName:
+    Value: !Ref BugReportsTable
