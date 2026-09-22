@@ -1,0 +1,1 @@
+{"prompt": "<customer-message>", "referenceResponse": "<description-of-expected-response>", "flowInputNode": "<your-flow-input-node-name>", "testId": "<unique-test-id>"}
