@@ -27,7 +27,7 @@ def main():
         runtime_id = response["agentRuntimeId"]
         print(f"Created harness: {runtime_id}")
     except client.exceptions.ConflictException:
-        runtimes = client.list_agent_runtimes()["items"]
+        runtimes = client.list_agent_runtimes()["agentRuntimes"]
         runtime_id = next(r["agentRuntimeId"] for r in runtimes if r["name"] == HARNESS_NAME)
         client.update_agent_runtime(
             agentRuntimeId=runtime_id,

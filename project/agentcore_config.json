@@ -1,0 +1,26 @@
+{
+    "harness": {
+      "type": "Amazon Bedrock Flow",
+      "note": "AgentCore Runtime and classic Bedrock Agents were both blocked at the platform level in this account (see README.md for the exact errors encountered). This Bedrock Flow serves as the functional harness, implementing the same system-prompt-driven routing and tool-calling behavior.",
+      "flowId": "62BUP68GDL",
+      "flowArn": "arn:aws:bedrock:us-east-1:978642742596:flow/62BUP68GDL",
+      "flowName": "support-chatbot-flow-api"
+    },
+    "gateway": {
+      "gatewayId": "bug-report-gateway-hoemunr794",
+      "gatewayArn": "arn:aws:bedrock-agentcore:us-east-1:978642742596:gateway/bug-report-gateway-hoemunr794",
+      "targetName": "bugreports",
+      "exposedToolName": "bugreports___create_bug_report"
+    },
+    "lambda": {
+      "functionName": "create-bug-report",
+      "functionArn": "arn:aws:lambda:us-east-1:978642742596:function:create-bug-report"
+    },
+    "dynamodb": {
+      "tableName": "bug-report-tool-stack-bug-reports"
+    },
+    "chatClient": {
+      "file": "chat_v2.py",
+      "note": "Uses the Amazon Bedrock Converse API with native tool use, invoking the create-bug-report Lambda directly. Maintains real multi-turn conversation state in Python, so bug-report field collection genuinely persists across turns. See chat_transcript.txt for a full recorded session covering all three routing behaviors and a successful tool call producing a real ticketId."
+    }
+  }
